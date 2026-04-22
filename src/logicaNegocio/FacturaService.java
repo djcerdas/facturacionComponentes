@@ -1,17 +1,17 @@
-package presentacion;
+package logicaNegocio;
 
 import accesoDatos.*;
 import entidades.*;
 
 import java.util.Date;
 
-public class MainApp {
+public class FacturaService {
 
-    public static void main(String[] args) {
+    private ClienteDAO clienteDAO = new ClienteDAO();
+    private ProductoDAO productoDAO = new ProductoDAO();
+    private GenericDAO<Orden> ordenDAO = new GenericDAO<>();
 
-        ClienteDAO clienteDAO = new ClienteDAO();
-        ProductoDAO productoDAO = new ProductoDAO();
-        GenericDAO<Orden> ordenDAO = new GenericDAO<>();
+    public Orden crearOrden(int cManual, int cSoftware, int cHardware) {
 
         // ========================
         // CLIENTE
@@ -58,20 +58,19 @@ public class MainApp {
         // ========================
         Orden orden = new Orden(cliente, new Date());
 
-        // Items
-        ItemOrden item1 = new ItemOrden(1, manual, 1);
-        ItemOrden item2 = new ItemOrden(2, software, 3);
-        ItemOrden item3 = new ItemOrden(3, hardware, 2);
+        if (cManual > 0)
+            orden.agregarItemOrden(new ItemOrden(1, manual, cManual));
 
-        orden.agregarItemOrden(item1);
-        orden.agregarItemOrden(item2);
-        orden.agregarItemOrden(item3);
+        if (cSoftware > 0)
+            orden.agregarItemOrden(new ItemOrden(2, software, cSoftware));
+
+        if (cHardware > 0)
+            orden.agregarItemOrden(new ItemOrden(3, hardware, cHardware));
 
         orden.calcularTotal();
 
         ordenDAO.guardar(orden);
 
-        System.out.println("Orden guardada correctamente");
-        System.out.println("Total: " + orden.getTotalOrden());
+        return orden;
     }
 }
